@@ -1,0 +1,9 @@
+{
+  "name": "tensorflow-js-nlg",
+  "version": "1.0.0",
+  "main": "main.js",
+  "license": "MIT",
+  "dependencies": {
+    "@tensorflow/tfjs-node": "^3.9.0"
+  }
+}
