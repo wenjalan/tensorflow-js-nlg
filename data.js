@@ -110,4 +110,24 @@ module.exports = class Data {
         });
         return [idsToWords, wordsToIds];
     }
+
+    // converts a string of words into a list of ids
+    static sentenceToIds(str, wordsToIds) {
+        const words = str.split(/\s+/);
+        const ids = [];
+        words.forEach((word) => {
+            ids.push(wordsToIds[word]);
+        });
+        return ids;
+    }
+
+    // converts a list of ids into a sentence
+    static idsToSentence(ids, idsToWords) {
+        let str = '';
+        ids.forEach((id) => {
+            str += idsToWords[id] + ' ';
+        });
+        return str.trim();
+    }
+
 }
