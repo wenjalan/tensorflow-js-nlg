@@ -17,7 +17,7 @@ async function start() {
 
     console.log('Beginning training...');
     await model.fit(trainXs, trainYs, {
-        epochs: 5,
+        epochs: 10,
         batchSize: 100,
     });
     console.log('Training complete!');
@@ -39,17 +39,34 @@ async function start() {
 function createModel(inputTensor) {
     const model = tf.sequential();
 
-    // add batch normalization
-    model.add(tf.layers.batchNormalization({
-        inputShape: [inputTensor.shape[1], inputTensor.shape[2]],
-        units: 256,
-    }));
+    // // add batch normalization
+    // model.add(tf.layers.batchNormalization({
+    //     inputShape: [inputTensor.shape[1], inputTensor.shape[2]],
+    //     units: 256,
+    // }));
 
     // add a lstm layer
     model.add(tf.layers.lstm({
-        units: 256,
+        inputShape: [inputTensor.shape[1], inputTensor.shape[2]],
+        units: 128,
         returnSequences: true,
     }));
+
+    // dropout
+    model.add(tf.layers.dropout({
+        rate: 0.2,
+    }));
+
+    // // another lstm layer
+    // model.add(tf.layers.lstm({
+    //     units: 512,
+    //     returnSequences: true,
+    // }));
+    //
+    // // dropout
+    // model.add(tf.layers.dropout({
+    //     rate: 0.2,
+    // }));
 
     // flatten
     model.add(tf.layers.flatten());

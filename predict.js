@@ -15,9 +15,18 @@ async function start() {
     const bundleData = await fs.readFile(BUNDLE_DIRECTORY, 'utf-8');
     const bundle = JSON.parse(bundleData);
 
+    // predict test
+    // const seed = 'fox in box knox on box socks in mr';
+    // const input = Data.sentenceToInput(seed, bundle.wordToIdMap, bundle.vocabSize);
+    // const pred = await model.predict(input);
+    // pred.print();
+
+    // console.log('PAUSE');
+
     // have it write some seuss
-    const n = 100;
-    const originalSeed = 'fox in box knox on box socks in box';
+    const n = 5;
+    const seqLen = 10;
+    const originalSeed = 'fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox fox';
     const TEMPERATURE = 0.5;
     let seedSentence = originalSeed;
     const predictions = [];
@@ -27,15 +36,23 @@ async function start() {
         const seedInput = Data.sentenceToInput(seedSentence, bundle.wordToIdMap, bundle.vocabSize);
 
         // get a prediction
-        const predRaw = await model.predict(seedInput);
+        let predRaw = await model.predict(seedInput);
+        // predRaw.print();
 
-        await verbosePrediction(predRaw, bundle.idToWordMap);
-        // if (lastPred != undefined) {
-        //     const sqDiff = tf.squaredDifference(lastPred, predRaw);
-        //     console.log('sum of sqDiff:');
-        //     sqDiff.sum().print();
-        // }
-        // lastPred = predRaw;
+        // we're only concerned with the last column of the prediction
+        const nextWordPred = tf.slice(predRaw, [0, seqLen - 2], -1);
+        const flatNextWord = nextWordPred.reshape([-1]);
+        // flatNextWord.print();
+        predRaw = flatNextWord;
+
+        // await verbosePrediction(predRaw, bundle.idToWordMap);
+        // print differences between predictions
+        if (lastPred != undefined) {
+            const sqDiff = await tf.squaredDifference(lastPred, predRaw).data();
+            const sum = sqDiff.reduce((a, b) => a + b);
+            console.log(i + ':sqDiffSum:', sum);
+        }
+        lastPred = predRaw;
 
         // sample an answer
         const sampleIndex = sample(tf.squeeze(predRaw), TEMPERATURE);

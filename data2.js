@@ -2,7 +2,7 @@ const fs = require('fs').promises;
 const tf = require('@tensorflow/tfjs-node');
 
 const FILE_PATH = 'foxinsocks.txt';
-const SEQUENCE_LENGTH = 10;
+const SEQUENCE_LENGTH = 50;
 
 module.exports = class Data {
 
@@ -49,6 +49,7 @@ module.exports = class Data {
 
         // convert the examples into tensors
         const numExamples = encodedExamples.size;
+        console.log('numExamples:', numExamples);
         const sampleLen = SEQUENCE_LENGTH - 1;
         const vocabSetSize = vocab.size;
         const trainXsBuffer = tf.buffer([numExamples, sampleLen, vocabSetSize]);
